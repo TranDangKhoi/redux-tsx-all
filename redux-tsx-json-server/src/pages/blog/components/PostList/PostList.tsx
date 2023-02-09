@@ -1,11 +1,43 @@
+import { AxiosError } from "axios";
 import { removePost, startEditingPost } from "pages/blog/blog.slice";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
+import http from "utils/http";
 import PostItem from "../PostItem";
+//1. Gọi API trong useEffect()
+//2. Nếu gọi thành công => dispatch action type: "blog/getPostListSuccess"
+//3. Nếu gọi thất bại => dipsatch action type: "blog/getPostListFailed"
 
 const PostList = () => {
   const postList = useSelector((state: RootState) => state.blog.postList);
   const dispatch = useDispatch();
+  useEffect(() => {
+    const controller = new AbortController();
+    (async function getPostList() {
+      try {
+        const res = await http.get("/posts", {
+          signal: controller.signal,
+        });
+        const postListResult = res.data;
+        dispatch({
+          type: "blog/getPostListSuccessful",
+          payload: postListResult,
+        });
+      } catch (err: any) {
+        if (!(err.code === "ERR_CANCELED")) {
+          dispatch({
+            type: "blog/getPostListFailed",
+            payload: err,
+          });
+        }
+        return err;
+      }
+    })();
+    return () => {
+      controller.abort();
+    };
+  }, [dispatch]);
   const handleRemovePost = (postId: string) => {
     dispatch(removePost(postId));
   };

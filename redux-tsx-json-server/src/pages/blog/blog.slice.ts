@@ -1,4 +1,3 @@
-import { initialPostList } from "../../constants/blog";
 import { Post } from "../../types/post.type";
 import { createSlice, nanoid, PayloadAction, current } from "@reduxjs/toolkit";
 
@@ -8,7 +7,7 @@ interface BlogState {
 }
 
 const initialState: BlogState = {
-  postList: initialPostList,
+  postList: [],
   editingPost: null,
 };
 const blogSlice = createSlice({
@@ -59,12 +58,16 @@ const blogSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addMatcher(
-      (action) => action.type.includes("cancel"),
-      (state, action) => {
-        console.log(current(state));
-      }
-    );
+    builder
+      .addCase("blog/getPostListSuccessful", (state, action: any) => {
+        state.postList = action.payload;
+      })
+      .addMatcher(
+        (action) => action.type.includes("cancel"),
+        (state, action) => {
+          console.log(current(state));
+        }
+      );
   },
 });
 
