@@ -1,4 +1,4 @@
-import { Post } from "./../types/post.type";
+import { Post } from "../types/post.type";
 export const initialPostList: Post[] = [
   {
     description:
