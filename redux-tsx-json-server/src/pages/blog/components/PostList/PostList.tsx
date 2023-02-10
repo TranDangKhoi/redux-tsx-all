@@ -1,45 +1,31 @@
-import { AxiosError } from "axios";
-import { removePost, startEditingPost } from "pages/blog/blog.slice";
+import {
+  deletePost,
+  getPostList,
+  startEditingPost,
+} from "pages/blog/blog.slice";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store";
-import http from "utils/http";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "store";
 import PostItem from "../PostItem";
+import SkeletonLoading from "../SkeletonLoading";
 //1. Gọi API trong useEffect()
 //2. Nếu gọi thành công => dispatch action type: "blog/getPostListSuccess"
 //3. Nếu gọi thất bại => dipsatch action type: "blog/getPostListFailed"
 
 const PostList = () => {
   const postList = useSelector((state: RootState) => state.blog.postList);
-  const dispatch = useDispatch();
+  const loading = useSelector((state: RootState) => state.blog.loading);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
-    const controller = new AbortController();
-    (async function getPostList() {
-      try {
-        const res = await http.get("/posts", {
-          signal: controller.signal,
-        });
-        const postListResult = res.data;
-        dispatch({
-          type: "blog/getPostListSuccessful",
-          payload: postListResult,
-        });
-      } catch (err: any) {
-        if (!(err.code === "ERR_CANCELED")) {
-          dispatch({
-            type: "blog/getPostListFailed",
-            payload: err,
-          });
-        }
-        return err;
-      }
-    })();
+    const promise = dispatch(getPostList());
     return () => {
-      controller.abort();
+      promise.abort();
     };
   }, [dispatch]);
+
   const handleRemovePost = (postId: string) => {
-    dispatch(removePost(postId));
+    dispatch(deletePost(postId));
   };
 
   const handleStartEditing = (postId: string) => {
@@ -59,14 +45,23 @@ const PostList = () => {
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-2 xl:gap-8">
-            {postList.map((post) => (
-              <PostItem
-                key={post.id}
-                post={post}
-                handleRemovePost={handleRemovePost}
-                handleStartEditing={handleStartEditing}
-              ></PostItem>
-            ))}
+            {!loading &&
+              postList.map((post) => (
+                <PostItem
+                  key={post.id}
+                  post={post}
+                  handleRemovePost={handleRemovePost}
+                  handleStartEditing={handleStartEditing}
+                ></PostItem>
+              ))}
+            {loading && (
+              <>
+                <SkeletonLoading></SkeletonLoading>
+                <SkeletonLoading></SkeletonLoading>
+                <SkeletonLoading></SkeletonLoading>
+                <SkeletonLoading></SkeletonLoading>
+              </>
+            )}
           </div>
         </div>
       </div>

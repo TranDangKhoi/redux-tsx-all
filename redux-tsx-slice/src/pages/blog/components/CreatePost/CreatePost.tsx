@@ -33,8 +33,7 @@ const CreatePost = () => {
       dispatch(cancelEditingPost());
       setFormData(initialState);
     } else {
-      const formDataWithId = { ...formData, id: new Date().toISOString() };
-      dispatch(addPost(formDataWithId));
+      dispatch(addPost(formData));
       setFormData(initialState);
     }
   };
