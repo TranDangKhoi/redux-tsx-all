@@ -1,4 +1,9 @@
-import { addPost, cancelEditingPost, updatePost } from "pages/blog/blog.slice";
+import {
+  addPost,
+  cancelEditingPost,
+  finishEditingPost,
+  updatePost,
+} from "pages/blog/blog.slice";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "store";
@@ -13,8 +18,13 @@ const initialState: Post = {
   published: false,
 };
 
+interface ErrorForm {
+  publishDate: string;
+}
+
 const CreatePost = () => {
   const [formData, setFormData] = useState<Post>(initialState);
+  const [formError, setFormError] = useState<null | ErrorForm>(null);
   const dispatch = useAppDispatch();
   const editingPost = useSelector((state: RootState) => state.blog.editingPost);
 
@@ -25,8 +35,16 @@ const CreatePost = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editingPost) {
-      dispatch(updatePost(formData));
-      setFormData(initialState);
+      // Phải mở gói (unwrap) thì mới lấy được data
+      dispatch(updatePost(formData))
+        .unwrap()
+        .then(() => {
+          dispatch(finishEditingPost(formData));
+          setFormError(null);
+        })
+        .catch((error) => {
+          setFormError(error.error);
+        });
     } else {
       dispatch(addPost(formData));
       setFormData(initialState);
@@ -104,14 +122,18 @@ const CreatePost = () => {
       <div className="mb-6">
         <label
           htmlFor="publishDate"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          className={`${
+            formError?.publishDate ? "text-red-700" : "text-gray-900"
+          } block mb-2 text-sm font-medium  dark:text-gray-300`}
         >
           Publish Date
         </label>
         <input
           type="datetime-local"
           id="publishDate"
-          className="block w-56 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+          className={`${
+            formError ? "border-red-700" : "border-gray-300"
+          }block w-56 rounded-lg border  bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
           placeholder="Title"
           value={formData.publishDate}
           onChange={(e) =>
@@ -122,6 +144,11 @@ const CreatePost = () => {
           }
         />
       </div>
+      {formError?.publishDate && (
+        <span className="mt-2 font-medium text-red-600">
+          {formError.publishDate}
+        </span>
+      )}
       <div className="flex items-center mb-6">
         <input
           id="publish"
