@@ -4,7 +4,7 @@ import {
   useUpdatePostMutation,
 } from "pages/blog/blog.service";
 import { cancelEditPost } from "pages/blog/blog.slice";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { Post } from "types/post.type";
@@ -17,6 +17,12 @@ const formDataInitialState: Omit<Post, "id"> = {
   published: false,
 };
 
+type FormError =
+  | {
+      [key in keyof typeof formDataInitialState]: string;
+    }
+  | null;
+
 const CreatePost = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState<Omit<Post, "id"> | Post>(
@@ -26,6 +32,13 @@ const CreatePost = () => {
   const [addPost, addPostResult] = useAddPostsMutation();
   const { data } = useGetSinglePostQuery(postId, { skip: !postId });
   const [updatePost, updatePostResult] = useUpdatePostMutation();
+  const errorForm: FormError = useMemo(() => {
+    const errorResult = postId ? updatePostResult.error : addPostResult.error;
+    // Vì errorResult của chúng ta có thể là FetchBaseQueryError | SerializedError | undefined, mỗi kiểu lại có một cấu trúc khác nhau
+    // Nên ta cần kiểm tra để hiển thị cho đúng
+    console.log(errorResult);
+    return errorResult as any;
+  }, [addPostResult.error, postId, updatePostResult.error]);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (postId) {
@@ -113,6 +126,10 @@ const CreatePost = () => {
           type="datetime-local"
           id="publishDate"
           className={`block w-56 rounded-lg border border-gray-300  bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+          value={formData.publishDate}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, publishDate: e.target.value }))
+          }
         />
       </div>
 

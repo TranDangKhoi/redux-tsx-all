@@ -75,11 +75,13 @@ export const blogApi = createApi({
       query: (postId) => `/posts/${postId}`,
     }),
     updatePost: build.mutation<Post, { id: string; body: Post }>({
-      query: (args) => ({
-        url: `/posts/${args.id}`,
-        method: "PUT",
-        body: args.body,
-      }),
+      query: (args) => {
+        return {
+          url: `/posts/${args.id}`,
+          method: "PUT",
+          body: args.body,
+        };
+      },
       // Trong trường hợp này thì getPosts sẽ chạy lại
       invalidatesTags: (result, error, data) => [
         { type: "Posts", id: data.id },
