@@ -1,12 +1,25 @@
-import { useGetPostsQuery } from "pages/blog/blog.service";
+import {
+  useDeletePostMutation,
+  useGetPostsQuery,
+} from "pages/blog/blog.service";
+import { startEditPost } from "pages/blog/blog.slice";
+import { useDispatch } from "react-redux";
 import PostItem from "../PostItem";
 import SkeletonLoading from "../SkeletonLoading";
 
 const PostList = () => {
   // isLoading chỉ dành cho lần fetch đầu tiên
   // isFetching là cho mỗi lần gọi API
-  const { data, isLoading, isFetching } = useGetPostsQuery();
-  console.log(data, isLoading, isFetching);
+
+  const { data, isFetching } = useGetPostsQuery();
+  const [deletePost, deletePostResult] = useDeletePostMutation();
+  const dispatch = useDispatch();
+  const handleStartEdit = (postId: string) => {
+    dispatch(startEditPost(postId));
+  };
+  const handleDeletePost = async (postId: string) => {
+    await deletePost(postId);
+  };
   return (
     <>
       <div className="py-6 bg-white sm:py-8 lg:py-12">
@@ -31,9 +44,12 @@ const PostList = () => {
             )}
             {!isFetching &&
               data?.map((post) => (
-                <>
-                  <PostItem key={post.id} post={post}></PostItem>
-                </>
+                <PostItem
+                  key={post.id}
+                  post={post}
+                  handleStartEdit={handleStartEdit}
+                  handleDeletePost={handleDeletePost}
+                ></PostItem>
               ))}
           </div>
         </div>

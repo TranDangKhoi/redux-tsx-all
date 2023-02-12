@@ -647,6 +647,7 @@ export const blogApi = createApi({
   }),
   endpoints: (build) => ({
     // Generic Types theo thứ tự là kiểu response trả về và arguments
+    // Truyền vào trong phần Generic Types lần lượt là type của Response.data trả về và phần body
     getPosts: build.query<Post[], void>({
       query: () => "/posts", // method không có argument
     }),

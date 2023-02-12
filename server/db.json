@@ -31,6 +31,22 @@
       "publishDate": "2023-11-16T11:35",
       "published": false,
       "title": "Nơi nào có ý chí, nơi đó có con đường."
+    },
+    {
+      "title": "Mọi công việc thành đạt đều nhờ sự kiên trì và lòng say đắm.",
+      "description": "Nghịch cảnh là một phần của cuộc sống. Nó không thể bị kiểm soát. Cái có thể kiểm soát chính là cách chúng ta phản ứng trước nghịch cảnh.",
+      "featuredImage": "https://images.unsplash.com/photo-1665412019489-1928d5afa5cc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80",
+      "publishDate": "",
+      "published": true,
+      "id": "4M17yhz"
+    },
+    {
+      "title": "Mọi công việc thành đạt đều nhờ sự kiên trì và lòng say mê.",
+      "description": "Mất niềm tin vào bản thân, cũng như bạn đánh mất thành công đang đợi mình",
+      "featuredImage": "https://images.unsplash.com/photo-1656105544318-1cca8c4d9878?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+      "publishDate": "",
+      "published": true,
+      "id": "-3KYDSc"
     }
   ]
 }

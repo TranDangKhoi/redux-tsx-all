@@ -23,16 +23,87 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const blogApi = createApi({
   reducerPath: "blogApi", // Tên field trong Redux state
+  tagTypes: ["Posts"], // Những kiểu tag cho phép dùng trong blogAPI
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:4000",
     timeout: 10000,
   }),
   endpoints: (build) => ({
-    // Generic Types theo thứ tự là kiểu response trả về và arguments
+    // Generic Types theo thứ tự là kiểu dữ liệu của response trả về và arguments
     getPosts: build.query<Post[], void>({
       query: () => "/posts", // method không có argument
+      /**
+       * provideTags có thể là array hoặc callback return array
+       * Nếu có bất kì một invalidatesTags nào match với providesTags này
+       * thì sẽ làm cho getPosts method chạy lại
+       * và cập nhật lại danh sách các bài post cũng như các tags phía dưới
+       */
+      providesTags(result) {
+        /**
+         * Cái callback này sẽ chạy mỗi khi getPosts chạy
+         * Mong muốn là sẽ return về một mảng kiểu
+         * interface Tags: {
+         *  type: "Posts"; // trùng với tên tagTypes ở trên
+         *  id: string;
+         * }
+         * Vì thế phải thêm as count vào để báo hiệu type là read-only, không thể mutate
+         */
+        if (result) {
+          const final = [
+            ...result.map(({ id }) => ({ type: "Posts" as const, id })),
+            { type: "Posts" as const, id: "LIST" },
+          ];
+          return final;
+        }
+        return [{ type: "Posts" as const, id: "LIST" }];
+      },
+    }),
+    addPosts: build.mutation<Post, Omit<Post, "id">>({
+      query: (body) => ({
+        url: "/posts",
+        method: "POST",
+        body,
+      }),
+      /**
+       * invalidatesTags cung cấp các tag để báo hiệu cho những method nào có providesTags
+       * match với nó sẽ bị gọi lại
+       * Trong trường hợp này getPosts sẽ được chạy lại sau khi addPost thành công
+       */
+      invalidatesTags: (result, error, body) => [{ type: "Posts", id: "LIST" }],
+    }),
+    getSinglePost: build.query<Post, string>({
+      query: (postId) => `/posts/${postId}`,
+    }),
+    updatePost: build.mutation<Post, { id: string; body: Post }>({
+      query: (args) => ({
+        url: `/posts/${args.id}`,
+        method: "PUT",
+        body: args.body,
+      }),
+      // Trong trường hợp này thì getPosts sẽ chạy lại
+      invalidatesTags: (result, error, data) => [
+        { type: "Posts", id: data.id },
+      ],
+    }),
+    deletePost: build.mutation<{}, string>({
+      query: (postId) => ({
+        url: `/posts/${postId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, data) => [
+        {
+          type: "Posts",
+          id: "LIST",
+        },
+      ],
     }),
   }),
 });
 
-export const { useGetPostsQuery } = blogApi;
+export const {
+  useGetPostsQuery,
+  useAddPostsMutation,
+  useGetSinglePostQuery,
+  useUpdatePostMutation,
+  useDeletePostMutation,
+} = blogApi;
