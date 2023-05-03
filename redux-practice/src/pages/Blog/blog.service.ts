@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Post } from "src/types/post.type";
 
 export const blogApi = createApi({
@@ -36,4 +36,4 @@ export const blogApi = createApi({
   }),
 });
 
-export const {} = blogApi;
+export const { useGetPostsQuery, useAddPostsMutation } = blogApi;
