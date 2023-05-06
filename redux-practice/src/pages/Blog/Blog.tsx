@@ -1,11 +1,17 @@
-import React from "react";
+import CreatePost from "./components/CreatePost";
+import PostList from "./components/PostList";
 
 type TBlogProps = {
   something: string;
 };
 
 const Blog = () => {
-  return <div></div>;
+  return (
+    <>
+      <CreatePost></CreatePost>
+      <PostList></PostList>
+    </>
+  );
 };
 
 export default Blog;

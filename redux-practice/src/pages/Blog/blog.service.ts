@@ -28,10 +28,11 @@ export const blogApi = createApi({
     }),
     addPosts: build.mutation<Post, Omit<Post, "id">>({
       query: (body) => ({
-        url: "/query",
+        url: "/posts",
         method: "POST",
         body,
       }),
+      invalidatesTags: (results) => [{ type: "Posts" as const, id: "LIST" }],
     }),
   }),
 });
