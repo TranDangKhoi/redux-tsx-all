@@ -35,6 +35,8 @@ Có thể nâng cao hơn `key: string` là `key: object` hoặc `key: array` n�
 ## Lỗi từ RTK Query
 
 Sẽ có 2 kiểu: FetchBaseQueryError | SerializedError
+FetchBaseQueryError: rơi vào trường hợp này khi server trả về lỗi, và lỗi từ server trả về nằm trong object data kèm theo một vài thứ khác như status, error, v.v....
+SerializedError: rơi vào trường hợp này khi là lỗi nhưng mà không phải từ server, lỗi bên phía client.
 
 Tham khảo: [https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling](https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling)
 
