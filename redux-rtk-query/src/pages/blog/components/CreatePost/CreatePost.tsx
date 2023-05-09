@@ -38,6 +38,8 @@ const CreatePost = () => {
   const [addPost, addPostResult] = useAddPostsMutation();
   const { data } = useGetSinglePostQuery(postId, { skip: !postId });
   const [updatePost, updatePostResult] = useUpdatePostMutation();
+  // Không cần lưu errors vào state, lưu vào một biến rồi dùng useMemo là được rồi
+  // Nếu lưu vào state thì dùng try catch ở hàm submit rồi xử lí narrow-type như thường
   const errorForm: FormError = useMemo(() => {
     // Vì ta truyền postId vào trong store khi đang ở trong trạng thái update post, nên nếu có postId thì
     // đồng nghĩa với việc errorForm phải là lỗi của updatePostResult và ngược lại nếu không có postId
@@ -46,23 +48,27 @@ const CreatePost = () => {
     // Vì errorResult của chúng ta có thể là FetchBaseQueryError | SerializedError | undefined, mỗi kiểu lại có một cấu trúc khác nhau
     // Nên ta cần kiểm tra để hiển thị cho đúng
     if (isUnprocessableEntityError(errorResult)) {
-      console.log(errorResult.data.error);
       return errorResult.data.error as FormError;
     }
     return null;
   }, [addPostResult.error, postId, updatePostResult.error]);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (postId) {
-      await updatePost({
-        id: postId,
-        body: formData as Post,
-      }).unwrap();
-      dispatch(cancelEditPost());
-    } else {
-      await addPost(formData).unwrap();
+    try {
+      if (postId) {
+        await updatePost({
+          id: postId,
+          body: formData as Post,
+        }).unwrap();
+        dispatch(cancelEditPost());
+      } else {
+        await addPost(formData).unwrap();
+      }
+      setFormData(formDataInitialState);
+    } catch (error) {
+      console.log(error);
+      return error;
     }
-    setFormData(formDataInitialState);
   };
   useEffect(() => {
     if (data) {
