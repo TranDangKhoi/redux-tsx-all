@@ -1,3 +1,4 @@
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import {
   useAddPostsMutation,
   useGetSinglePostQuery,
@@ -8,6 +9,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { Post } from "types/post.type";
+import {
+  isFetchBaseQueryError,
+  isSerializedError,
+  isUnprocessableEntityError,
+} from "utils/helpers";
 
 const formDataInitialState: Omit<Post, "id"> = {
   title: "",
@@ -33,11 +39,17 @@ const CreatePost = () => {
   const { data } = useGetSinglePostQuery(postId, { skip: !postId });
   const [updatePost, updatePostResult] = useUpdatePostMutation();
   const errorForm: FormError = useMemo(() => {
+    // Vì ta truyền postId vào trong store khi đang ở trong trạng thái update post, nên nếu có postId thì
+    // đồng nghĩa với việc errorForm phải là lỗi của updatePostResult và ngược lại nếu không có postId
+    // thì là người dùng đang add post
     const errorResult = postId ? updatePostResult.error : addPostResult.error;
     // Vì errorResult của chúng ta có thể là FetchBaseQueryError | SerializedError | undefined, mỗi kiểu lại có một cấu trúc khác nhau
     // Nên ta cần kiểm tra để hiển thị cho đúng
-    console.log(errorResult);
-    return errorResult as any;
+    if (isUnprocessableEntityError(errorResult)) {
+      console.log(errorResult.data.error);
+      return errorResult.data.error as FormError;
+    }
+    return null;
   }, [addPostResult.error, postId, updatePostResult.error]);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -131,6 +143,7 @@ const CreatePost = () => {
             setFormData((prev) => ({ ...prev, publishDate: e.target.value }))
           }
         />
+        <span className="text-red-500">{errorForm?.publishDate}</span>
       </div>
 
       <div className="flex items-center mb-6">
