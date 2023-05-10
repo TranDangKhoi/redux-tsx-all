@@ -69,7 +69,8 @@ export const blogApi = createApi({
        * match với nó sẽ bị gọi lại
        * Trong trường hợp này getPosts sẽ được chạy lại sau khi addPost thành công
        */
-      invalidatesTags: (result, error, body) => [{ type: "Posts", id: "LIST" }],
+      invalidatesTags: (result, error, body) =>
+        error ? [] : [{ type: "Posts", id: "LIST" }],
     }),
     getSinglePost: build.query<Post, string>({
       query: (postId) => `/posts/${postId}`,
@@ -83,9 +84,8 @@ export const blogApi = createApi({
         };
       },
       // Trong trường hợp này thì getPosts sẽ chạy lại
-      invalidatesTags: (result, error, data) => [
-        { type: "Posts", id: data.id },
-      ],
+      invalidatesTags: (result, error, data) =>
+        error ? [] : [{ type: "Posts", id: data.id }],
     }),
     deletePost: build.mutation<{}, string>({
       query: (postId) => ({

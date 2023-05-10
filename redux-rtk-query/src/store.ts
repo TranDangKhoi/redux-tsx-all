@@ -3,6 +3,7 @@ import blogReducer from "pages/blog/blog.slice";
 import { useDispatch } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import { rtkQueryErrorLogger } from "middleware";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,7 @@ export const store = configureStore({
   },
   // Thêm api middleware để enable các tishn năng như caching, invalidation, polling, refresh
   middleware: (getDefaultMiddleWare) =>
-    getDefaultMiddleWare().concat(blogApi.middleware),
+    getDefaultMiddleWare().concat(blogApi.middleware, rtkQueryErrorLogger),
 });
 
 // Optional, nhưng bắt buộc nếu dùng tính năng refetchOnFocus/refetchOnReconnect
