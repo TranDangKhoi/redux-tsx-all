@@ -8,14 +8,20 @@ const PostList = () => {
   const { data: postsData } = useGetPostsQuery();
   const posts = postsData;
   return (
-    <div className="max-w-xl w-full">
+    <div className="w-full max-w-2xl">
       {posts &&
         posts.map((post) => (
           <div
-            className="font-medium"
             key={post.id}
+            className="flex items-center gap-x-2"
           >
-            {post.title}
+            <div
+              className="font-medium"
+              key={post.id}
+            >
+              {post.title}
+            </div>
+            <span className="cursor-pointer text-blue-500">Edit post</span>
           </div>
         ))}
     </div>

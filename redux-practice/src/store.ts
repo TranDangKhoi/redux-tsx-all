@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { useDispatch } from "react-redux";
+import { rtkQueryLogger } from "./middleware";
 import { blogApi } from "./pages/Blog/blog.service";
 import blogReducer from "./pages/Blog/blog.slice";
 
@@ -9,7 +10,7 @@ export const store = configureStore({
     blog: blogReducer,
     [blogApi.reducerPath]: blogApi.reducer,
   },
-  middleware: (getDefaultMiddleWare) => getDefaultMiddleWare().concat(blogApi.middleware),
+  middleware: (getDefaultMiddleWare) => getDefaultMiddleWare().concat(blogApi.middleware, rtkQueryLogger),
 });
 
 // Optional, nhưng bắt buộc nếu dùng tính năng refetchOnFocus/refetchOnReconnect
