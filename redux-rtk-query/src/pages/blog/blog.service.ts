@@ -59,11 +59,16 @@ export const blogApi = createApi({
       },
     }),
     addPosts: build.mutation<Post, Omit<Post, "id">>({
-      query: (body) => ({
-        url: "/posts",
-        method: "POST",
-        body,
-      }),
+      query: (body) => {
+        // thêm đoạn code lỗi để test serialized error toast
+        // let a: any = null;
+        // a.b = 1;
+        return {
+          url: "/posts",
+          method: "POST",
+          body,
+        };
+      },
       /**
        * invalidatesTags cung cấp các tag để báo hiệu cho những method nào có providesTags
        * match với nó sẽ bị gọi lại
