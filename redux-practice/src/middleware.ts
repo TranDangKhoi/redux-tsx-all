@@ -1,6 +1,6 @@
 import { AnyAction, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 
-export const rtkQueryLogger: Middleware = (api: MiddlewareAPI) => (next) => (action: AnyAction) => {
+// error sẽ chia ra làm 2 kiểu nên ta phải handle hiển thị cho cả 2
+export const rtkQueryErrorsLogger: Middleware = (api: MiddlewareAPI) => (next) => (action: AnyAction) => {
   return next(action);
 };

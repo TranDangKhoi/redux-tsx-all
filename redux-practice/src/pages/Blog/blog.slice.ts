@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Post } from "src/types/post.type";
 
 type TInitialState = {
   postId: string;
@@ -13,15 +12,17 @@ const blogSlice = createSlice({
   name: "blog",
   initialState,
   reducers: {
-    startEditPost: (state, action: PayloadAction<string>) => {
+    startEditMode: (state, action: PayloadAction<string>) => {
       state.postId = action.payload;
     },
-    finishEditPost: (state, action: PayloadAction<string>) => {
+    finishedEditMode: (state) => {
       state.postId = "";
     },
   },
 });
 
-export const { finishEditPost, startEditPost } = blogSlice.actions;
+export const { finishedEditMode, startEditMode } = blogSlice.actions;
+
 const blogReducer = blogSlice.reducer;
+
 export default blogReducer;

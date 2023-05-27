@@ -1,29 +1,44 @@
-import { useGetPostsQuery } from "../../blog.service";
-
-type TPostListProps = {
-  something: string;
-};
+import { useDispatch } from "react-redux";
+import { useDeletePostsMutation, useGetPostsQuery } from "../../blog.api";
+import { startEditMode } from "../../blog.slice";
 
 const PostList = () => {
-  const { data: postsData } = useGetPostsQuery();
-  const posts = postsData;
+  const dispatch = useDispatch();
+  const { data: postListData } = useGetPostsQuery();
+  const [deletePost] = useDeletePostsMutation();
+  const handleStartEdittingPost = (id: string) => {
+    dispatch(startEditMode(id));
+  };
+
   return (
     <div className="w-full max-w-2xl">
-      {posts &&
-        posts.map((post) => (
-          <div
-            key={post.id}
-            className="flex items-center gap-x-2"
-          >
+      <div className="mt-5 flex flex-col gap-y-2">
+        {postListData &&
+          postListData.map((post) => (
             <div
-              className="font-medium"
+              className="flex gap-x-2"
               key={post.id}
             >
-              {post.title}
+              <span className="text-lg">{post.title}</span>
+              <button
+                type="button"
+                className="rounded-sm bg-blue-500 p-1 text-sm text-white"
+                onClick={() => handleStartEdittingPost(post.id)}
+              >
+                Update
+              </button>
+              <button
+                type="button"
+                className="rounded-sm bg-blue-500 p-1 text-sm text-white"
+                onClick={() => {
+                  deletePost(post.id);
+                }}
+              >
+                Delete
+              </button>
             </div>
-            <span className="cursor-pointer text-blue-500">Edit post</span>
-          </div>
-        ))}
+          ))}
+      </div>
     </div>
   );
 };

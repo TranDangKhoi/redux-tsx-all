@@ -7,10 +7,10 @@ type TBlogProps = {
 
 const Blog = () => {
   return (
-    <>
+    <div className="mx-auto w-full max-w-2xl">
       <CreatePost></CreatePost>
       <PostList></PostList>
-    </>
+    </div>
   );
 };
 
